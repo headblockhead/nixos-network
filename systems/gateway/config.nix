@@ -17,11 +17,11 @@ in
     fileSystems
     git
     homeManager
+    monitoring
     ssd
     ssh
     users
     zsh
-    monitoring
   ];
 
   age.secrets.wireguard-gateway-key.file = ../../secrets/wireguard-gateway-key.age;
@@ -73,7 +73,7 @@ in
             iifname "${iot_port}" udp dport { 53, 67, 5353 } accept
             iifname "${iot_port}" ct state { established, related } accept
 
-            iifname "${srv_port}" tcp dport { 53, 1705, 3100 } accept
+            iifname "${srv_port}" tcp dport { 53, 1705, 3100, 4317 } accept
             iifname "${srv_port}" udp dport { 53, 67, 5353 } accept
             iifname "${srv_port}" ct state { established, related } accept
 
@@ -92,8 +92,8 @@ in
             iifname {"${lan_port}", "${iot_port}", "${srv_port}"} oifname "${wan_port}" accept
             iifname "${wan_port}" oifname {"${lan_port}", "${iot_port}", "${srv_port}"} ct state { established, related } accept
 
-            iifname {"${lan_port}", "${srv_port}"} oifname "${iot_port}" accept
-            iifname "${iot_port}" oifname {"${lan_port}", "${srv_port}"} ct state { established, related } accept
+            iifname "${srv_port}" oifname "${iot_port}" accept
+            iifname "${iot_port}" oifname "${srv_port}" ct state { established, related } accept
 
             iifname {"${lan_port}", "${iot_port}", "wg0"} oifname "${srv_port}" accept
             iifname "${srv_port}" oifname {"${lan_port}", "${iot_port}", "wg0"} ct state { established, related } accept
@@ -358,7 +358,27 @@ in
           targets = [ "172.16.3.42:9002" ];
         }];
       }
+      {
+        job_name = "opentelemetry-collector";
+        static_configs = [{
+          targets = [ "127.0.0.1:9003" ];
+        }];
+      }
     ];
+  };
+
+  services.opentelemetry-collector = {
+    enable = true;
+    settings = {
+      receivers.otlp.protocols.grpc.endpoint = "0.0.0.0:4317";
+      processors.batch = { };
+      exporters.prometheus.endpoint = "127.0.0.1:9003";
+      service.pipelines.metrics = {
+        receivers = [ "otlp" ];
+        processors = [ "batch" ];
+        exporters = [ "prometheus" ];
+      };
+    };
   };
 
   services.loki = {

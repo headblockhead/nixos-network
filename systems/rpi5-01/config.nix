@@ -11,10 +11,10 @@
     distributedBuilds
     git
     homeManager
+    monitoring
     ssh
     users
     zsh
-    monitoring
 
     ncps # custom module
   ];
@@ -35,6 +35,10 @@
 
   services.ncps = {
     enable = true;
+    openTelemetry = {
+      enable = true;
+      grpcURL = "http://172.16.1.1:4317";
+    };
     server.addr = "127.0.0.1:8501";
     upstream.caches = [
       "http://localhost:5000" # Harmonia
@@ -54,7 +58,7 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 80 ];
+  networking.firewall.allowedTCPPorts = [ 80 9002 ];
 
   services.nginx = {
     enable = true;

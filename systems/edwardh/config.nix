@@ -8,6 +8,7 @@
     fzf
     git
     homeManager
+    monitoring
     ssh
     users
     zsh
@@ -22,6 +23,8 @@
   age.secrets.mail-hashed-password.file = ../../secrets/mail-hashed-password.age;
   age.secrets.radicale-htpasswd.file = ../../secrets/radicale-htpasswd.age;
   age.secrets.wireguard-key.file = ../../secrets/wireguard-key.age;
+
+  networking.firewall.interfaces."wg0".allowedTCPPorts = [ 9002 ]; # Prometheus Node
 
   networking.firewall.allowedTCPPorts = [
     80 # HTTP

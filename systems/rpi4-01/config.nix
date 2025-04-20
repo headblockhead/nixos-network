@@ -8,13 +8,13 @@
     fzf
     git
     homeManager
+    monitoring
     ssh
     users
     zsh
-    monitoring
   ];
 
-  networking.firewall.allowedTCPPorts = [ 8123 ];
+  networking.firewall.allowedTCPPorts = [ 8123 9002 ];
 
   hardware.bluetooth.enable = true;
   virtualisation.oci-containers = {

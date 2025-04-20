@@ -8,11 +8,14 @@
     fzf
     git
     homeManager
+    monitoring
     ssh
     users
     zsh
-    monitoring
   ];
+
+  networking.firewall.allowedTCPPorts = [ 9002 ];
+
 
   environment.systemPackages = [
   ];
