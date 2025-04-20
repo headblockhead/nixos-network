@@ -311,7 +311,7 @@ in
       server = {
         http_addr = "0.0.0.0";
         http_port = 3000;
-        domain = "grafana.edwardh.dev";
+        root_url = "https://grafana.edwardh.dev/";
         enforce_domain = true;
       };
       users = {
