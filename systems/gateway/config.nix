@@ -359,6 +359,12 @@ in
         }];
       }
       {
+        job_name = "edwardh-node-exporter";
+        static_configs = [{
+          targets = [ "172.16.5.2:9002" ];
+        }];
+      }
+      {
         job_name = "opentelemetry-collector";
         static_configs = [{
           targets = [ "127.0.0.1:9003" ];
