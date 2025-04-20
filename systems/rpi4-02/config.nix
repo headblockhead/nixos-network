@@ -11,6 +11,7 @@
     ssh
     users
     zsh
+    monitoring
   ];
 
   environment.systemPackages = [

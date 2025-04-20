@@ -21,9 +21,11 @@ in
     ssh
     users
     zsh
+    monitoring
   ];
 
   age.secrets.wireguard-gateway-key.file = ../../secrets/wireguard-gateway-key.age;
+  age.secrets.grafana-admin-password.file = ../../secrets/grafana-admin-password.age;
 
   # Allow packet forwarding
   boot.kernel.sysctl = {
@@ -69,12 +71,15 @@ in
 
             iifname "${iot_port}" tcp dport { 53, 1704 } accept
             iifname "${iot_port}" udp dport { 53, 67, 5353 } accept
+            iifname "${iot_port}" ct state { established, related } accept
 
-            iifname "${srv_port}" tcp dport { 53, 1705 } accept
+            iifname "${srv_port}" tcp dport { 53, 1705, 3100 } accept
             iifname "${srv_port}" udp dport { 53, 67, 5353 } accept
+            iifname "${srv_port}" ct state { established, related } accept
 
-            iifname "wg0" tcp dport { 53 } accept
+            iifname "wg0" tcp dport { 53, 3000, 3100 } accept
             iifname "wg0" udp dport { 53 } accept
+            iifname "wg0" ct state { established, related } accept
 
             iifname "${wan_port}" ct state { established, related } accept
             iifname "${wan_port}" icmp type { echo-request, destination-unreachable, time-exceeded } accept
@@ -274,6 +279,116 @@ in
           persistentKeepalive = 25;
         }
       ];
+    };
+  };
+
+  systemd.tmpfiles.rules = [
+    "z ${config.age.secrets.grafana-admin-password.path} 400 grafana grafana - -"
+  ];
+
+  services.grafana = {
+    enable = true;
+    provision = {
+      enable = true;
+      datasources.settings.datasources = [
+        {
+          name = "Prometheus";
+          type = "prometheus";
+          access = "proxy";
+          editable = false;
+          url = "http://127.0.0.1:9001";
+        }
+        {
+          name = "Loki";
+          type = "loki";
+          access = "proxy";
+          editable = false;
+          url = "http://127.0.0.1:3100";
+        }
+      ];
+    };
+    settings = {
+      server = {
+        http_addr = "0.0.0.0";
+        http_port = 3000;
+        domain = "grafana.edwardh.dev";
+        enforce_domain = true;
+      };
+      users = {
+        default_language = "en-GB";
+        default_theme = "system";
+      };
+      security = {
+        disable_gravatar = true;
+        admin_user = "headblockhead";
+        admin_password = "$__file{${config.age.secrets.grafana-admin-password.path}}";
+        cookie_secure = true;
+        cookie_samesite = "strict";
+        content_security_policy = true;
+      };
+      analytics.reporting_enabled = false;
+    };
+  };
+
+  services.prometheus = {
+    enable = true;
+    port = 9001;
+    scrapeConfigs = [
+      {
+        job_name = "${config.networking.hostName}-node-exporter";
+        static_configs = [{
+          targets = [ "127.0.0.1:9002" ];
+        }];
+      }
+      {
+        job_name = "rpi5-01-node-exporter";
+        static_configs = [{
+          targets = [ "172.16.3.51:9002" ];
+        }];
+      }
+      {
+        job_name = "rpi4-01-node-exporter";
+        static_configs = [{
+          targets = [ "172.16.3.41:9002" ];
+        }];
+      }
+      {
+        job_name = "rpi4-02-node-exporter";
+        static_configs = [{
+          targets = [ "172.16.3.42:9002" ];
+        }];
+      }
+    ];
+  };
+
+  services.loki = {
+    enable = true;
+    configuration = {
+      server.http_listen_port = 3100;
+      auth_enabled = false;
+      common = {
+        replication_factor = 1;
+        path_prefix = "/tmp/loki";
+        ring = {
+          instance_addr = "127.0.0.1";
+          kvstore.store = "inmemory";
+        };
+      };
+      schema_config = {
+        configs = [{
+          from = "2020-10-24";
+          store = "tsdb";
+          object_store = "filesystem";
+          schema = "v13";
+          index = {
+            prefix = "index_";
+            period = "24h";
+          };
+        }];
+      };
+      storage_config.filesystem = {
+        directory = "/tmp/loki/chunks";
+      };
     };
   };
 

@@ -370,6 +370,15 @@
           recommendedProxySettings = true;
         };
       };
+      "grafana.edwardh.dev" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          proxyPass = "http://172.16.5.1:3000"; # gateway
+          proxyWebsockets = true;
+          recommendedProxySettings = true;
+        };
+      };
       "hass.edwardh.dev" = {
         forceSSL = true;
         enableACME = true;

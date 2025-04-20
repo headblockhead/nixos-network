@@ -14,6 +14,7 @@
     ssh
     users
     zsh
+    monitoring
 
     ncps # custom module
   ];

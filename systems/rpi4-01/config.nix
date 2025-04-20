@@ -11,6 +11,7 @@
     ssh
     users
     zsh
+    monitoring
   ];
 
   networking.firewall.allowedTCPPorts = [ 8123 ];
