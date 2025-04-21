@@ -312,7 +312,6 @@ in
         http_addr = "0.0.0.0";
         http_port = 3000;
         root_url = "https://grafana.edwardh.dev/";
-        enforce_domain = true;
       };
       users = {
         default_language = "en-GB";
