@@ -1,4 +1,4 @@
-{ outputs, ... }:
+{ outputs, netboot-client, ... }:
 
 {
   networking.hostName = "edward-dell-01";
@@ -22,6 +22,18 @@
     users
     zsh
   ];
+
+  services.pixiecore = {
+    enable = true;
+    openFirewall = true;
+    dhcpNoBind = true; # Use existing DHCP server.
+
+    mode = "boot";
+    kernel = "${netboot-client.kernel}/bzImage";
+    initrd = "${netboot-client.netbootRamdisk}/initrd";
+    cmdLine = "init=${netboot-client.toplevel}/init loglevel=4";
+    debug = true;
+  };
 
   # find / -name '*.desktop' 2> /dev/null
   services.xserver.desktopManager.gnome.favoriteAppsOverride = ''

@@ -68,7 +68,7 @@
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
-      nixosConfigurations = {
+      nixosConfigurations = rec {
         # Local servers
         gateway = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
@@ -155,10 +155,20 @@
           ];
         };
 
+        netboot-client = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs outputs sshkeys account; };
+          modules = [
+            ./systems/dell-netboot-client/config.nix
+            ./systems/dell-netboot-client/hardware.nix
+            "${nixpkgs}/nixos/modules/installer/netboot/netboot-minimal.nix"
+          ];
+        };
+
         # Old Dell desktop machine.
         edward-dell-01 = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = { inherit inputs outputs sshkeys account; };
+          specialArgs = { inherit inputs outputs sshkeys account; netboot-client = netboot-client.config.system.build; };
           modules = [
             ./systems/edward-dell-01/config.nix
             ./systems/edward-dell-01/hardware.nix
