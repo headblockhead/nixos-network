@@ -287,8 +287,8 @@ in
       peers = [
         {
           publicKey = "";
-          allowedIPs = [ "172.16.6.2/32" ];
-          endpoint = "18.135.222.143:51820";
+          allowedIPs = [ "172.16.6.0/24" ];
+          endpoint = "18.135.222.143:51821";
           persistentKeepalive = 25;
         }
       ];
