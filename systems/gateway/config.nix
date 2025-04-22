@@ -24,7 +24,7 @@ in
     zsh
   ];
 
-  age.secrets.wireguard-gateway-key.file = ../../secrets/wireguard-gateway-key.age;
+  age.secrets.wg0-gateway-key.file = ../../secrets/wg0-gateway-key.age;
   age.secrets.grafana-admin-password.file = ../../secrets/grafana-admin-password.age;
 
   # Allow packet forwarding
@@ -270,11 +270,24 @@ in
     wg0 = {
       address = [ "172.16.5.1/24" ];
       listenPort = 51820;
-      privateKeyFile = config.age.secrets.wireguard-gateway-key.path;
+      privateKeyFile = config.age.secrets.wg0-gateway-key.path;
       peers = [
         {
           publicKey = "JMk7o494sDBjq9EAOeeAwPHxbF6TpbpFSHGSk2DnJHU=";
           allowedIPs = [ "172.16.5.2/32" ];
+          endpoint = "18.135.222.143:51820";
+          persistentKeepalive = 25;
+        }
+      ];
+    };
+    wg1 = {
+      address = [ "172.16.6.1/24" ];
+      listenPort = 51820;
+      privateKeyFile = config.age.secrets.wg1-gateway-key.path;
+      peers = [
+        {
+          publicKey = "";
+          allowedIPs = [ "172.16.6.2/32" ];
           endpoint = "18.135.222.143:51820";
           persistentKeepalive = 25;
         }
