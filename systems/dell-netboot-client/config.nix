@@ -13,6 +13,7 @@
     ssd
     zsh
   ];
+
   boot.loader.timeout = lib.mkForce 5;
   users.ldap = {
     enable = true;

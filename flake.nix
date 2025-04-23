@@ -161,7 +161,9 @@
           modules = [
             ./systems/dell-netboot-client/config.nix
             ./systems/dell-netboot-client/hardware.nix
-            "${nixpkgs}/nixos/modules/installer/netboot/netboot-minimal.nix"
+            "${nixpkgs}/nixos/modules/installer/netboot/netboot.nix"
+            "${nixpkgs}/nixos/modules/profiles/minimal.nix"
+            "${nixpkgs}/nixos/modules/profiles/base.nix"
           ];
         };
 
