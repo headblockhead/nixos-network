@@ -88,8 +88,14 @@ in
 
             iifname {"wg0", "wg1"} tcp dport { 3000, 3100 } accept
 
+            iifname "wg1" tcp dport { 5353 } accept
+
             iifname "${wan_port}" ct state { established, related } accept
             iifname "${wan_port}" icmp type { echo-request, destination-unreachable, time-exceeded } accept
+
+            iifname "${wan_port}" udp dport mdns counter accept comment "DELETEME: allow mdns on WAN"
+            iifname "${wan_port}" tcp dport 5354 counter accept comment "DELETEME: allow zeroconf"
+            iifname "${wan_port}" udp dport 5354 counter accept comment "DELETEME: allow zeroconf"
 
             counter drop
           }
@@ -134,6 +140,8 @@ in
       lan_port
       iot_port
       srv_port
+      "wg1"
+      wan_port # DELETEME: allow mdns on WAN
     ];
     publish = {
       enable = true;
@@ -147,7 +155,7 @@ in
   services.dnsmasq = {
     enable = true;
     settings = {
-      interface = [ lan_port iot_port srv_port "wg0" ];
+      interface = [ lan_port iot_port srv_port "wg0" "wg1" "wg2" ];
       bind-dynamic = true; # Bind only to interfaces specified above.
 
       domain-needed = true; # Don't forward DNS requests without dots/domain parts to upstream servers.
