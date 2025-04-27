@@ -6,9 +6,8 @@
       (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-
-  boot.kernelModules = [ "r8125" "r8169" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "sd_mod" "sr_mod" ];
+  boot.kernelModules = [ "r8125" "r8169" "kvm-intel" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [
     r8125
   ];

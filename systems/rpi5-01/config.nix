@@ -10,13 +10,13 @@
     basicConfig
     distributedBuilds
     git
+    headless
     homeManager
     monitoring
     ssh
     users
     zsh
-
-    ncps # custom module
+    ncps # remove when #396901 and #397685 merged
   ];
 
   age.secrets.harmonia-signing-key.file = ../../secrets/harmonia-signing-key.age;
