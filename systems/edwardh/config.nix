@@ -35,7 +35,7 @@
   age.secrets.wg1-gateway-preshared-key.file = ../../secrets/wg1-gateway-preshared-key.age;
   age.secrets.wg2-gateway-preshared-key.file = ../../secrets/wg2-gateway-preshared-key.age;
 
-  networking.firewall.interfaces."wg0".allowedTCPPorts = [ 9002 ]; # Prometheus Node
+  networking.firewall.interfaces."wg0".allowedTCPPorts = [ 9002 9004 9005 9006 ]; # Prometheus exporters
 
   networking.firewall.allowedTCPPorts = [
     80 # HTTP
@@ -330,6 +330,12 @@
     };
   };
 
+  services.prometheus.exporters.bind = {
+    enable = true;
+    port = 9004;
+    listenAddress = "172.16.10.2";
+  };
+
   services.radicale = {
     enable = true;
     settings = {
@@ -387,8 +393,17 @@
     };
   };
 
+  services.prometheus.exporters.wireguard = {
+    enable = true;
+    port = 9006;
+    listenAddress = "172.16.10.2";
+
+    withRemoteIp = true; # Show the remote IP address of the peer
+  };
+
   services.nginx = {
     enable = true;
+    statusPage = true; # localhost only, used by prometheus exporter
     virtualHosts = {
       "edwardh.dev" = {
         default = true;
@@ -458,6 +473,12 @@
         };
       };
     };
+  };
+
+  services.prometheus.exporters.nginx = {
+    enable = true;
+    port = 9005;
+    listenAddress = "172.16.10.2";
   };
 
   environment.systemPackages = [

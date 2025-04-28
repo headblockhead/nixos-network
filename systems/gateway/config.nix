@@ -402,6 +402,18 @@ in
         }];
       }
       {
+        job_name = "rpi5-01-postgres-exporter";
+        static_configs = [{
+          targets = [ "172.16.3.51:9003" ];
+        }];
+      }
+      {
+        job_name = "rpi5-01-nginx-exporter";
+        static_configs = [{
+          targets = [ "172.16.3.51:9005" ];
+        }];
+      }
+      {
         job_name = "rpi4-01-node-exporter";
         static_configs = [{
           targets = [ "172.16.3.41:9002" ];
@@ -420,26 +432,24 @@ in
         }];
       }
       {
-        job_name = "opentelemetry-collector";
+        job_name = "edwardh-bind-exporter";
         static_configs = [{
-          targets = [ "127.0.0.1:9003" ];
+          targets = [ "172.16.10.2:9004" ];
+        }];
+      }
+      {
+        job_name = "edwardh-nginx-exporter";
+        static_configs = [{
+          targets = [ "172.16.10.2:9005" ];
+        }];
+      }
+      {
+        job_name = "edwardh-wireguard-exporter";
+        static_configs = [{
+          targets = [ "172.16.10.2:9006" ];
         }];
       }
     ];
-  };
-
-  services.opentelemetry-collector = {
-    enable = true;
-    settings = {
-      receivers.otlp.protocols.grpc.endpoint = "0.0.0.0:4317";
-      processors.batch = { };
-      exporters.prometheus.endpoint = "127.0.0.1:9003";
-      service.pipelines.metrics = {
-        receivers = [ "otlp" ];
-        processors = [ "batch" ];
-        exporters = [ "prometheus" ];
-      };
-    };
   };
 
   services.loki = {

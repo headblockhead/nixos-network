@@ -47,10 +47,6 @@
 
   services.ncps = {
     enable = true;
-    openTelemetry = {
-      enable = true;
-      grpcURL = "http://172.16.1.1:4317";
-    };
     server.addr = "127.0.0.1:8501";
     upstream.caches = [
       "http://localhost:5000" # Harmonia
@@ -70,13 +66,13 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 80 9002 8008 ];
+  networking.firewall.allowedTCPPorts = [ 80 9002 8008 9003 9005 ];
 
   services.dendrite =
     let
       database = {
         connection_string = "postgresql:///dendrite?host=/run/postgresql";
-        max_open_conns = 90;
+        max_open_conns = 497;
         max_idle_conns = 5;
         conn_max_lifetime = -1;
       };
@@ -127,6 +123,9 @@
 
   services.postgresql = {
     enable = true;
+    settings = {
+      max_connections = 500;
+    };
     ensureDatabases = [ "dendrite" ];
     ensureUsers = [
       {
@@ -136,14 +135,27 @@
     ];
   };
 
+  services.prometheus.exporters.postgres = {
+    enable = true;
+    port = 9003;
+
+    dataSourceName = "postgresql:///dendrite?host=/run/postgresql";
+  };
+
   services.nginx = {
     enable = true;
+    statusPage = true;
     recommendedProxySettings = true;
     virtualHosts = {
       "cache.edwardh.dev" = {
         locations."/".proxyPass = "http://127.0.0.1:8501";
       };
     };
+  };
+
+  services.prometheus.exporters.nginx = {
+    enable = true;
+    port = 9005;
   };
 
   environment.systemPackages = [
