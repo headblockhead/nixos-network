@@ -1,4 +1,10 @@
 let
+  # Yubikey access for editing of secrets
+  crystal-peak = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvr2FrC9i1bjoVzg+mdytOJ1P0KRtah/HeiMBuKD3DX cardno:23_836_181";
+  depot-37 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIvDaJmOSXV24B83sIfZqAUurs+cZ7582L4QDePuc3p7 cardno:17_032_332";
+  thunder-mountain = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBexdKZYlyseEcm1S3xNDqPTGZMfm/NcW1ygY91weDhC cardno:30_797_561";
+  editing-keys = [ crystal-peak depot-37 thunder-mountain ];
+
   # Machine keys
   edward-desktop-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOs2G2Yt7+A53v5tymBcbAlWnT9tLZYNSW+XGqZU6ITh";
   edward-laptop-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGOkGgaa7J85LK4Vfe3+NvxxQObZspyRd50OkUQz/Ox";
@@ -8,10 +14,14 @@ let
   gateway = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFl5CJU+QEKdSV/ybMegoKGT+NamF1FBYcMcSRACZLvJ";
 in
 {
-  # Access passwords
+  # Passwords
   "mail-hashed-password.age".publicKeys = [ edwardh ];
   "grafana-admin-password.age".publicKeys = [ gateway ];
   "radicale-htpasswd.age".publicKeys = [ edwardh ];
+
+  # Dendrite/Matrix
+  "dendrite-environment-file.age".publicKeys = [ rpi5-01 ];
+  "dendrite-matrix-key.age".publicKeys = editing-keys ++ [ rpi5-01 ];
 
   # Nix Cache signing private keys
   "harmonia-signing-key.age".publicKeys = [ rpi5-01 ];

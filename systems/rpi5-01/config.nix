@@ -1,4 +1,4 @@
-{ outputs, config, ... }:
+{ outputs, config, lib, ... }:
 {
   networking.hostName = "rpi5-01";
 
@@ -21,6 +21,18 @@
 
   age.secrets.harmonia-signing-key.file = ../../secrets/harmonia-signing-key.age;
   age.secrets.ncps-signing-key.file = ../../secrets/ncps-signing-key.age;
+  age.secrets.dendrite-environment-file = {
+    file = ../../secrets/dendrite-environment-file.age;
+    owner = "dendrite";
+    group = "dendrite";
+    mode = "400";
+  };
+  age.secrets.dendrite-matrix-key = {
+    file = ../../secrets/dendrite-matrix-key.age;
+    owner = "dendrite";
+    group = "dendrite";
+    mode = "400";
+  };
 
   services.harmonia = {
     enable = true;
@@ -58,7 +70,71 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 80 9002 ];
+  networking.firewall.allowedTCPPorts = [ 80 9002 8008 ];
+
+  services.dendrite =
+    let
+      database = {
+        connection_string = "postgresql:///dendrite?host=/run/postgresql";
+        max_open_conns = 90;
+        max_idle_conns = 5;
+        conn_max_lifetime = -1;
+      };
+    in
+    {
+      enable = true;
+      httpPort = 8008;
+      environmentFile = config.age.secrets.dendrite-environment-file.path;
+      settings = {
+        global = {
+          server_name = "edwardh.dev";
+          private_key = config.age.secrets.dendrite-matrix-key.path;
+          presence = {
+            enable_inbound = true;
+            enable_outbound = true;
+          };
+        };
+
+        global.database = database;
+        app_service_api.database = database;
+        federation_api.database = database;
+        key_server.database = database;
+        media_api.database = database;
+        mscs.database = database;
+        relay_api.database = database;
+        room_server.database = database;
+        sync_api.database = database;
+        user_api.account_database = database;
+        user_api.pusher_database = database;
+
+        sync_api.search.enabled = true;
+        client_api.registration_shared_secret = "$REGISTRATION_SHARED_SECRET"; # defined in environmentFile
+      };
+    };
+  users.users.dendrite = {
+    isSystemUser = true;
+    group = "dendrite";
+  };
+  users.groups.dendrite = { };
+  systemd.services.dendrite = {
+    after = [ "postgresql.service" ];
+    serviceConfig = {
+      User = "dendrite";
+      Group = "dendrite";
+      DynamicUser = lib.mkForce false;
+    };
+  };
+
+  services.postgresql = {
+    enable = true;
+    ensureDatabases = [ "dendrite" ];
+    ensureUsers = [
+      {
+        name = "dendrite";
+        ensureDBOwnership = true;
+      }
+    ];
+  };
 
   services.nginx = {
     enable = true;

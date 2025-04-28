@@ -22,7 +22,12 @@
   ];
 
   age.secrets.mail-hashed-password.file = ../../secrets/mail-hashed-password.age;
-  age.secrets.radicale-htpasswd.file = ../../secrets/radicale-htpasswd.age;
+  age.secrets.radicale-htpasswd = {
+    file = ../../secrets/radicale-htpasswd.age;
+    owner = "radicale";
+    group = "radicale";
+    mode = "400";
+  };
   age.secrets.wg0-edwardh-key.file = ../../secrets/wg0-edwardh-key.age;
   age.secrets.wg1-edwardh-key.file = ../../secrets/wg1-edwardh-key.age;
   age.secrets.wg2-edwardh-key.file = ../../secrets/wg2-edwardh-key.age;
@@ -300,10 +305,6 @@
     "d /etc/bind/zones 755 named root -"
     "L+ /etc/bind/zones/db.edwardh.dev - - - - ${./db.edwardh.dev}"
     "z /etc/bind/zones/db.edwardh.dev 744 named root -"
-
-    "d /etc/radicale 755 root root -"
-    "C+ /etc/radicale/htpasswd - - - - ${config.age.secrets.radicale-htpasswd.path}"
-    "z /etc/radicale/htpasswd 700 radicale radicale -"
   ];
 
   services.bind = {
@@ -322,6 +323,9 @@
       extraConfig = ''
         dnssec-policy default;
         inline-signing yes;
+
+        # ${./db.edwardh.dev}
+        # The above comment is included so that the bind service will be restarted when the db.edwardh.dev file changes.
       '';
     };
   };
@@ -332,7 +336,7 @@
       server.hosts = [ "127.0.0.1:5232" ];
       auth = {
         type = "htpasswd";
-        htpasswd_filename = "/etc/radicale/htpasswd";
+        htpasswd_filename = config.age.secrets.radicale-htpasswd.path;
         htpasswd_encryption = "bcrypt";
       };
     };
@@ -390,8 +394,23 @@
         default = true;
         forceSSL = true;
         enableACME = true;
-        locations."/" = {
-          root = edwardh-dev.packages.edwardh-dev;
+        locations = {
+          "/" = {
+            root = edwardh-dev.packages.edwardh-dev;
+          };
+          "/.well-known/matrix/server" = {
+            extraConfig = ''
+              default_type application/json;
+              return 200 '{ "m.server": "matrix.edwardh.dev:443" }';
+            '';
+          };
+          "/.well-known/matrix/client" = {
+            extraConfig = ''
+              default_type application/json;
+              return 200 '{ "m.homeserver": { "base_url": "https://matrix.edwardh.dev" } }';
+              add_header "Access-Control-Allow-Origin" *;
+            '';
+          };
         };
       };
       "calendar.edwardh.dev" = {
@@ -427,6 +446,14 @@
         locations."/" = {
           proxyPass = "http://172.16.3.41:8123"; # rpi4-01
           proxyWebsockets = true;
+          recommendedProxySettings = true;
+        };
+      };
+      "matrix.edwardh.dev" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/_matrix" = {
+          proxyPass = "http://172.16.3.51:8008"; # rpi5-01
           recommendedProxySettings = true;
         };
       };
