@@ -405,12 +405,12 @@ in
           targets = [ "172.16.3.51:9002" ];
         }];
       }
-      {
-        job_name = "rpi5-01-postgres-exporter";
-        static_configs = [{
-          targets = [ "172.16.3.51:9003" ];
-        }];
-      }
+      #      {
+      #job_name = "rpi5-01-postgres-exporter";
+      #static_configs = [{
+      #targets = [ "172.16.3.51:9003" ];
+      #}];
+      #}
       {
         job_name = "rpi5-01-nginx-exporter";
         static_configs = [{
