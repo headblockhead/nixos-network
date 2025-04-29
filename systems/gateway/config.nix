@@ -388,6 +388,10 @@ in
   services.prometheus = {
     enable = true;
     port = 9001;
+    globalConfig = {
+      scrape_interval = "5s";
+      scrape_timeout = "1s";
+    };
     scrapeConfigs = [
       {
         job_name = "${config.networking.hostName}-node-exporter";

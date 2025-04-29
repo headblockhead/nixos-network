@@ -132,6 +132,9 @@
         name = "dendrite";
         ensureDBOwnership = true;
       }
+      {
+        name = "postgres-exporter";
+      }
     ];
   };
 
