@@ -4,7 +4,6 @@
     arduino
     audacity
     chiaki
-    deja-dup
     discord
     firefox
     fractal # matrix messenger

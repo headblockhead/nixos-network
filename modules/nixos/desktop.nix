@@ -198,6 +198,8 @@
     ddcutil
 
     gnome-pomodoro
+    newsflash
+    deja-dup
 
     adwaita-icon-theme
     adwaita-qt
