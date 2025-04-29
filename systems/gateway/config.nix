@@ -73,6 +73,7 @@ in
             iifname "lo" accept
 
             iifname "${lan_port}" accept
+            iifname "wg1" accept
 
             iifname "${iot_port}" tcp dport { 53, 1704 } accept
             iifname "${iot_port}" udp dport { 53, 67, 5353 } accept
@@ -82,13 +83,11 @@ in
             iifname "${srv_port}" udp dport { 53, 67, 5353 } accept
             iifname "${srv_port}" ct state { established, related } accept
 
-            iifname {"wg0", "wg1", "wg2"} tcp dport { 53 } accept
-            iifname {"wg0", "wg1", "wg2"} udp dport { 53 } accept
-            iifname {"wg0", "wg1", "wg2"} ct state { established, related } accept
+            iifname {"wg0", "wg2"} tcp dport { 53 } accept
+            iifname {"wg0", "wg2"} udp dport { 53 } accept
+            iifname {"wg0", "wg2"} ct state { established, related } accept
 
-            iifname {"wg0", "wg1"} tcp dport { 3000, 3100 } accept
-
-            iifname "wg1" tcp dport { 5353 } accept
+            iifname "wg0" tcp dport { 3000, 3100 } accept
 
             iifname "${wan_port}" ct state { established, related } accept
             iifname "${wan_port}" icmp type { echo-request, destination-unreachable, time-exceeded } accept
