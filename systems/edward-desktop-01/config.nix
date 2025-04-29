@@ -2,7 +2,6 @@
 
 {
   networking.hostName = "edward-desktop-01";
-  networking.domain = "edwardh.lan";
 
   imports = with outputs.nixosModules; [
     basicConfig

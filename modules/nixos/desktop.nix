@@ -1,4 +1,13 @@
-{ pkgs, lib, ... }: {
+{ account, outputs, pkgs, lib, ... }: {
+
+  # delete when NixOS/nixpkgs#385497 is fixed
+  disabledModules = [
+    "services/ttys/kmscon.nix"
+  ];
+  imports = with outputs.nixosModules; [
+    kmscon
+  ];
+
   programs.dconf = {
     enable = true;
     profiles = {
@@ -165,6 +174,12 @@
     };
   };
 
+  # Set default desktopManager type to gnome-wayland, and add user icon.
+  systemd.tmpfiles.rules = [
+    "f+ /var/lib/AccountsService/users/${account.username} 0600 root root - [User]\\nSession=gnome\\nIcon=/var/lib/AccountsService/icons/${account.username}\\nSystemAccount=false\\n"
+    "L+ /var/lib/AccountsService/icons/${account.username} - - - - ${account.profileicon}"
+  ];
+
   # Touchpad/touchscreen support.
   services.libinput.enable = true;
   services.touchegg.enable = true;
@@ -226,18 +241,20 @@
     pkgs.unstable.nerd-fonts.sauce-code-pro
   ];
 
-  # un-comment when NixOS/nixpkgs#385497 is fixed
-  #  services.kmscon = {
-  #enable = true;
-  #fonts = [
-  #{ name = "SauceCodePro Nerd Font"; package = pkgs.unstable.nerd-fonts.sauce-code-pro; }
-  #];
-  #extraConfig = ''
-  #font-size=12
-  #hwaccel
-  #'';
-  #hwRender = true;
-  #};
+  services.kmscon = {
+    enable = true;
+    fonts = [
+      { name = "SauceCodePro Nerd Font"; package = pkgs.unstable.nerd-fonts.sauce-code-pro; }
+    ];
+    extraConfig = ''
+      font-size=12
+      hwaccel
+    '';
+    hwRender = true;
+  };
+
+  # Use latest (non-LTS) kernel package by default for machines with desktops.
+  boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";

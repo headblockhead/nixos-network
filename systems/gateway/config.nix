@@ -8,7 +8,6 @@ let
 in
 {
   networking.hostName = "gateway";
-  networking.domain = "edwardh.lan";
 
   imports = with outputs.nixosModules; [
     basicConfig
@@ -16,6 +15,7 @@ in
     distributedBuilds
     fileSystems
     git
+    headless
     homeManager
     monitoring
     ssd
@@ -24,7 +24,12 @@ in
     zsh
   ];
 
-  age.secrets.wireguard-gateway-key.file = ../../secrets/wireguard-gateway-key.age;
+  age.secrets.wg0-gateway-key.file = ../../secrets/wg0-gateway-key.age;
+  age.secrets.wg0-gateway-preshared-key.file = ../../secrets/wg0-gateway-preshared-key.age;
+  age.secrets.wg1-gateway-key.file = ../../secrets/wg1-gateway-key.age;
+  age.secrets.wg1-gateway-preshared-key.file = ../../secrets/wg1-gateway-preshared-key.age;
+  age.secrets.wg2-gateway-key.file = ../../secrets/wg2-gateway-key.age;
+  age.secrets.wg2-gateway-preshared-key.file = ../../secrets/wg2-gateway-preshared-key.age;
   age.secrets.grafana-admin-password.file = ../../secrets/grafana-admin-password.age;
 
   # Allow packet forwarding
@@ -77,26 +82,37 @@ in
             iifname "${srv_port}" udp dport { 53, 67, 5353 } accept
             iifname "${srv_port}" ct state { established, related } accept
 
-            iifname "wg0" tcp dport { 53, 3000, 3100 } accept
-            iifname "wg0" udp dport { 53 } accept
-            iifname "wg0" ct state { established, related } accept
+            iifname {"wg0", "wg1", "wg2"} tcp dport { 53 } accept
+            iifname {"wg0", "wg1", "wg2"} udp dport { 53 } accept
+            iifname {"wg0", "wg1", "wg2"} ct state { established, related } accept
+
+            iifname {"wg0", "wg1"} tcp dport { 3000, 3100 } accept
+
+            iifname "wg1" tcp dport { 5353 } accept
 
             iifname "${wan_port}" ct state { established, related } accept
             iifname "${wan_port}" icmp type { echo-request, destination-unreachable, time-exceeded } accept
+
+            iifname "${wan_port}" udp dport mdns counter accept comment "DELETEME: allow mdns on WAN"
+            iifname "${wan_port}" tcp dport 5354 counter accept comment "DELETEME: allow zeroconf"
+            iifname "${wan_port}" udp dport 5354 counter accept comment "DELETEME: allow zeroconf"
 
             counter drop
           }
           chain forward {
             type filter hook forward priority 0; policy drop;
 
-            iifname {"${lan_port}", "${iot_port}", "${srv_port}"} oifname "${wan_port}" accept
-            iifname "${wan_port}" oifname {"${lan_port}", "${iot_port}", "${srv_port}"} ct state { established, related } accept
+            iifname {"${lan_port}", "${iot_port}", "${srv_port}", "wg2" } oifname "${wan_port}" accept
+            iifname "${wan_port}" oifname {"${lan_port}", "${iot_port}", "${srv_port}", "wg2"} ct state { established, related } accept
 
             iifname "${srv_port}" oifname "${iot_port}" accept
             iifname "${iot_port}" oifname "${srv_port}" ct state { established, related } accept
 
-            iifname {"${lan_port}", "${iot_port}", "wg0"} oifname "${srv_port}" accept
-            iifname "${srv_port}" oifname {"${lan_port}", "${iot_port}", "wg0"} ct state { established, related } accept
+            iifname {"${lan_port}", "${iot_port}", "wg0", "wg1"} oifname "${srv_port}" accept
+            iifname "${srv_port}" oifname {"${lan_port}", "${iot_port}", "wg0", "wg1"} ct state { established, related } accept
+
+            iifname "wg1" oifname "${lan_port}" accept
+            iifname "${lan_port}" oifname "wg1" ct state { established, related } accept
 
             counter drop
           }
@@ -124,6 +140,8 @@ in
       lan_port
       iot_port
       srv_port
+      "wg1"
+      wan_port # DELETEME: allow mdns on WAN
     ];
     publish = {
       enable = true;
@@ -137,7 +155,7 @@ in
   services.dnsmasq = {
     enable = true;
     settings = {
-      interface = [ lan_port iot_port srv_port "wg0" ];
+      interface = [ lan_port iot_port srv_port "wg0" "wg1" "wg2" ];
       bind-dynamic = true; # Bind only to interfaces specified above.
 
       domain-needed = true; # Don't forward DNS requests without dots/domain parts to upstream servers.
@@ -266,19 +284,57 @@ in
     mongodbPackage = pkgs.mongodb-7_0;
   };
 
-  networking.wg-quick.interfaces = {
-    wg0 = {
-      address = [ "172.16.5.1/24" ];
-      listenPort = 51820;
-      privateKeyFile = config.age.secrets.wireguard-gateway-key.path;
-      peers = [
-        {
-          publicKey = "JMk7o494sDBjq9EAOeeAwPHxbF6TpbpFSHGSk2DnJHU=";
-          allowedIPs = [ "172.16.5.2/32" ];
-          endpoint = "18.135.222.143:51820";
-          persistentKeepalive = 25;
-        }
-      ];
+  networking.wireguard = {
+    enable = true;
+    interfaces = {
+      wg0 = {
+        ips = [ "172.16.10.1/24" ];
+        listenPort = 51800;
+        privateKeyFile = config.age.secrets.wg0-gateway-key.path;
+        peers = [
+          {
+            name = "edwardh";
+            publicKey = "JMk7o494sDBjq9EAOeeAwPHxbF6TpbpFSHGSk2DnJHU=";
+            presharedKeyFile = config.age.secrets.wg0-gateway-preshared-key.path;
+            endpoint = "18.135.222.143:51800";
+
+            allowedIPs = [ "172.16.10.2/32" ];
+            persistentKeepalive = 25;
+          }
+        ];
+      };
+      wg1 = {
+        ips = [ "172.16.11.1/24" ];
+        listenPort = 51801;
+        privateKeyFile = config.age.secrets.wg1-gateway-key.path;
+        peers = [
+          {
+            name = "edwardh";
+            publicKey = "N+Zy+x/CG3CW78b3+7JqQTIYy7jSURjugKhPjJjDW2M=";
+            presharedKeyFile = config.age.secrets.wg1-gateway-preshared-key.path;
+            endpoint = "18.135.222.143:51801";
+
+            allowedIPs = [ "172.16.11.2/32" ];
+            persistentKeepalive = 25;
+          }
+        ];
+      };
+      wg2 = {
+        ips = [ "172.16.12.1/24" ];
+        listenPort = 51802;
+        privateKeyFile = config.age.secrets.wg2-gateway-key.path;
+        peers = [
+          {
+            name = "edwardh";
+            publicKey = "GccFAvCqia8Q5yK45FOb3zROp7bdtz9NLBoqDRoif2I=";
+            presharedKeyFile = config.age.secrets.wg2-gateway-preshared-key.path;
+            endpoint = "18.135.222.143:51802";
+
+            allowedIPs = [ "172.16.12.2/32" ];
+            persistentKeepalive = 25;
+          }
+        ];
+      };
     };
   };
 
@@ -332,6 +388,10 @@ in
   services.prometheus = {
     enable = true;
     port = 9001;
+    globalConfig = {
+      scrape_interval = "5s";
+      scrape_timeout = "1s";
+    };
     scrapeConfigs = [
       {
         job_name = "${config.networking.hostName}-node-exporter";
@@ -343,6 +403,18 @@ in
         job_name = "rpi5-01-node-exporter";
         static_configs = [{
           targets = [ "172.16.3.51:9002" ];
+        }];
+      }
+      #      {
+      #job_name = "rpi5-01-postgres-exporter";
+      #static_configs = [{
+      #targets = [ "172.16.3.51:9003" ];
+      #}];
+      #}
+      {
+        job_name = "rpi5-01-nginx-exporter";
+        static_configs = [{
+          targets = [ "172.16.3.51:9005" ];
         }];
       }
       {
@@ -360,30 +432,28 @@ in
       {
         job_name = "edwardh-node-exporter";
         static_configs = [{
-          targets = [ "172.16.5.2:9002" ];
+          targets = [ "172.16.10.2:9002" ];
         }];
       }
       {
-        job_name = "opentelemetry-collector";
+        job_name = "edwardh-bind-exporter";
         static_configs = [{
-          targets = [ "127.0.0.1:9003" ];
+          targets = [ "172.16.10.2:9004" ];
+        }];
+      }
+      {
+        job_name = "edwardh-nginx-exporter";
+        static_configs = [{
+          targets = [ "172.16.10.2:9005" ];
+        }];
+      }
+      {
+        job_name = "edwardh-wireguard-exporter";
+        static_configs = [{
+          targets = [ "172.16.10.2:9006" ];
         }];
       }
     ];
-  };
-
-  services.opentelemetry-collector = {
-    enable = true;
-    settings = {
-      receivers.otlp.protocols.grpc.endpoint = "0.0.0.0:4317";
-      processors.batch = { };
-      exporters.prometheus.endpoint = "127.0.0.1:9003";
-      service.pipelines.metrics = {
-        receivers = [ "otlp" ];
-        processors = [ "batch" ];
-        exporters = [ "prometheus" ];
-      };
-    };
   };
 
   services.loki = {

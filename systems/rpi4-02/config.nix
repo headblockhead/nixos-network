@@ -7,6 +7,7 @@
     distributedBuilds
     fzf
     git
+    headless
     homeManager
     monitoring
     ssh

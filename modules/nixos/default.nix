@@ -13,7 +13,10 @@
   fzf = import ./fzf.nix;
   git = import ./git.nix;
   gpg = import ./gpg.nix;
+  headless = import ./headless.nix;
   homeManager = import ./homeManager.nix;
+  kmscon = import ./kmscon.nix;
+  monitoring = import ./monitoring.nix;
   ncps = import ./ncps.nix;
   network = import ./network.nix;
   openrgb = import ./openrgb.nix;
@@ -31,5 +34,4 @@
   xmrig = import ./xmrig.nix;
   yubikey = import ./yubikey.nix;
   zsh = import ./zsh.nix;
-  monitoring = import ./monitoring.nix;
 }

@@ -54,4 +54,6 @@
     xc
     neovim
   ];
+
+  networking.domain = lib.mkDefault "lan";
 }
