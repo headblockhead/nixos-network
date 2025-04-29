@@ -8,7 +8,7 @@ let
   # Machine keys
   edward-desktop-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOs2G2Yt7+A53v5tymBcbAlWnT9tLZYNSW+XGqZU6ITh";
   edward-laptop-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGOkGgaa7J85LK4Vfe3+NvxxQObZspyRd50OkUQz/Ox";
-  #edward-dell-01 = "";
+  edward-dell-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHiyDjr1nhiNjMkH4BCptfyb3UQ5xiPgMJlTxEA01FBr";
   edwardh = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOlOFRdX4CqbBfeikQKXibVIxhFjg0gTcTUdTgDIL7H8";
   rpi5-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAHz1QPfx3+31Tw+w/cjBh/oNBWAZ5WU2wEgYe3JDdj5";
   gateway = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFl5CJU+QEKdSV/ybMegoKGT+NamF1FBYcMcSRACZLvJ";
@@ -42,8 +42,8 @@ in
   "wg1-gateway-preshared-key.age".publicKeys = [ edwardh gateway ];
   "wg1-edward-laptop-01-key.age".publicKeys = [ edward-laptop-01 ];
   "wg1-edward-laptop-01-preshared-key.age".publicKeys = [ edwardh edward-laptop-01 ];
-  #"wg1-edward-dell-01-key.age".publicKeys = [ edward-dell-01 ];
-  #"wg1-edward-dell-01-preshared-key.age".publicKeys = [ edwardh edward-dell-01 ];
+  "wg1-edward-dell-01-key.age".publicKeys = [ edward-dell-01 ];
+  "wg1-edward-dell-01-preshared-key.age".publicKeys = [ edwardh edward-dell-01 ];
 
   # WG2 (remote access to home WAN): 172.16.12.0/24
   # Server
@@ -53,8 +53,8 @@ in
   "wg2-gateway-preshared-key.age".publicKeys = [ edwardh gateway ];
   "wg2-edward-laptop-01-key.age".publicKeys = [ edward-laptop-01 ];
   "wg2-edward-laptop-01-preshared-key.age".publicKeys = [ edwardh edward-laptop-01 ];
-  #"wg2-edward-dell-01-key.age".publicKeys = [ edward-dell-01 ];
-  #"wg2-edward-dell-01-preshared-key.age".publicKeys = [ edwardh edward-dell-01 ];
+  "wg2-edward-dell-01-key.age".publicKeys = [ edward-dell-01 ];
+  "wg2-edward-dell-01-preshared-key.age".publicKeys = [ edwardh edward-dell-01 ];
   # Clients: Phones
   "wg2-edwards-iphone-preshared-key.age".publicKeys = [ edwardh ];
 }

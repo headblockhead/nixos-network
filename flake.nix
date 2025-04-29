@@ -2,10 +2,10 @@
   description = "Reproducable NixOS (and homemanager) config for my local servers, cloud servers, desktops, and laptops.";
 
   nixConfig = {
-    #    extra-substituters = [ "https://cache.edwardh.dev" ];
-    #extra-trusted-public-keys = [
-    #"cache.edwardh.dev-1:/i5z0aYaRDBcT8Qf9uDFi8z0FEKIZsK7RVZLMKNJMGg="
-    #];
+    extra-substituters = [ "https://cache.edwardh.dev" ];
+    extra-trusted-public-keys = [
+      "cache.edwardh.dev-1:/i5z0aYaRDBcT8Qf9uDFi8z0FEKIZsK7RVZLMKNJMGg="
+    ];
   };
 
   inputs = {
@@ -174,6 +174,7 @@
           modules = [
             ./systems/edward-dell-01/config.nix
             ./systems/edward-dell-01/hardware.nix
+            agenix.nixosModules.default
           ];
         };
       };

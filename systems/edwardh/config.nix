@@ -34,6 +34,8 @@
   age.secrets.wg0-gateway-preshared-key.file = ../../secrets/wg0-gateway-preshared-key.age;
   age.secrets.wg1-gateway-preshared-key.file = ../../secrets/wg1-gateway-preshared-key.age;
   age.secrets.wg2-gateway-preshared-key.file = ../../secrets/wg2-gateway-preshared-key.age;
+  age.secrets.wg1-edward-dell-01-preshared-key.file = ../../secrets/wg1-edward-dell-01-preshared-key.age;
+  age.secrets.wg2-edward-dell-01-preshared-key.file = ../../secrets/wg2-edward-dell-01-preshared-key.age;
 
   networking.firewall.interfaces."wg0".allowedTCPPorts = [ 9002 9004 9005 9006 ]; # Prometheus exporters
 
@@ -375,6 +377,18 @@
             allowedIPs = [ "172.16.11.1/32" ]; # edwardh can connect to gateway
             presharedKeyFile = config.age.secrets.wg1-gateway-preshared-key.path;
           }
+          #          {
+          #name = "edward-laptop-01";
+          #publicKey = "";
+          #allowedIPs = [ "172.16.11.10/32" ];
+          #presharedKeyFile = config.age.secrets.wg1-edward-laptop-01-preshared-key.path;
+          #}
+          {
+            name = "edward-dell-01";
+            publicKey = "JM26AmQkP0ZmPme7PU4kB8bUAEgIPovPxxlC4fJAK00=";
+            allowedIPs = [ "172.16.11.11/32" ];
+            presharedKeyFile = config.age.secrets.wg1-edward-dell-01-preshared-key.path;
+          }
         ];
       };
       wg2 = {
@@ -387,6 +401,18 @@
             publicKey = "wktxkYndiWThccdNLRXmaFYupDP6Yhb+J584zgz1u2Y=";
             allowedIPs = [ "172.16.12.1/32" ]; # edwardh can connect to gateway
             presharedKeyFile = config.age.secrets.wg2-gateway-preshared-key.path;
+          }
+          #          {
+          #name = "edward-laptop-01";
+          #publicKey = "";
+          #allowedIPs = [ "172.16.12.10/32" ];
+          #presharedKeyFile = config.age.secrets.wg2-edward-laptop-01-preshared-key.path;
+          #}
+          {
+            name = "edward-dell-01";
+            publicKey = "GfqLz2aiUIYy5U+m6QpKhXfV9LqZLcsamZTSUJwMdwo=";
+            allowedIPs = [ "172.16.12.11/32" ];
+            presharedKeyFile = config.age.secrets.wg2-edward-dell-01-preshared-key.path;
           }
         ];
       };
