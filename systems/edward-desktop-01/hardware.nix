@@ -17,6 +17,7 @@
 
   systemd.packages = with pkgs; [ lact ];
   systemd.services.lactd.wantedBy = [ "multi-user.target" ];
+  boot.kernelParams = [ "amdgpu.ppfeaturemask=0xfffd7fff" ];
 
   hardware.graphics = {
     enable = true;

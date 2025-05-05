@@ -438,6 +438,9 @@
         locations = {
           "/" = {
             root = edwardh-dev.packages.edwardh-dev;
+            extraConfig = ''
+              gzip on;
+            '';
           };
           "/.well-known/matrix/server" = {
             extraConfig = ''

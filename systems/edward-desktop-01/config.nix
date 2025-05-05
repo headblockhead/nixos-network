@@ -22,7 +22,6 @@
     printer
     sdr
     sound
-    snapclient
     ssd
     ssh
     transmission
@@ -30,6 +29,8 @@
     virtualisation
     yubikey
     zsh
+
+    sheepit
 
     #p2pool
     #xmrig
@@ -75,6 +76,7 @@
   environment.systemPackages = [
     pkgs.clonehero
     pkgs.unstable.blender-hip
+    pkgs.prismlauncher
   ];
 
   system.stateVersion = "22.05";
