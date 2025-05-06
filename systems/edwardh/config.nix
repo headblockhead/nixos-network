@@ -430,6 +430,16 @@
   services.nginx = {
     enable = true;
     statusPage = true; # localhost only, used by prometheus exporter
+    appendHttpConfig = ''
+      map $sent_http_content_type $expires {
+        default                    off;
+        text/html                  epoch;
+        text/css                   max;
+        application/javascript     max;
+        ~image/                    max;
+        ~font/                     max;
+      }
+    '';
     virtualHosts = {
       "edwardh.dev" = {
         default = true;
@@ -441,8 +451,11 @@
             extraConfig = ''
               gzip on;
               gzip_types text/html text/css;
+              etag on;
+              expires $expires;
             '';
           };
+
           "/.well-known/matrix/server" = {
             extraConfig = ''
               default_type application/json;
