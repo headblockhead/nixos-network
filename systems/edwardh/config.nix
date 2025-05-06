@@ -440,6 +440,7 @@
             root = edwardh-dev.packages.edwardh-dev;
             extraConfig = ''
               gzip on;
+              gzip_types text/html text/css;
             '';
           };
           "/.well-known/matrix/server" = {
