@@ -3,6 +3,7 @@
     all.base-dt-params = {
       nvme = {
         enable = true;
+        value = "on";
       };
       pciex1_gen = {
         enable = true;
