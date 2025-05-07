@@ -8,6 +8,7 @@
     fzf
     git
     headless
+    fileSystems
     monitoring
     ssh
     users
