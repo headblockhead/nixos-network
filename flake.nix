@@ -86,7 +86,7 @@
         rpi5-01 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
           trustCaches = false;
-          specialArgs = { inherit inputs outputs sshkeys account; };
+          specialArgs = { inherit inputs outputs sshkeys account nixos-raspberrypi; };
           modules = [
             ./systems/rpi5-01/config.nix
             ./systems/rpi5-01/hardware.nix
@@ -98,7 +98,7 @@
         rpi5-02 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
           trustCaches = false;
-          specialArgs = { inherit inputs outputs sshkeys account; };
+          specialArgs = { inherit inputs outputs sshkeys account nixos-raspberrypi; };
           modules = [
             ./systems/rpi5-02/config.nix
             ./systems/rpi5-02/hardware.nix
@@ -110,7 +110,7 @@
         rpi5-03 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
           trustCaches = false;
-          specialArgs = { inherit inputs outputs sshkeys account; };
+          specialArgs = { inherit inputs outputs sshkeys account nixos-raspberrypi; };
           modules = [
             ./systems/rpi5-03/config.nix
             ./systems/rpi5-03/hardware.nix
@@ -122,7 +122,7 @@
         rpi4-01 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
           trustCaches = false;
-          specialArgs = { inherit inputs outputs sshkeys account; };
+          specialArgs = { inherit inputs outputs sshkeys account nixos-raspberrypi; };
           modules = [
             ./systems/rpi4-01/config.nix
             ./systems/rpi4-01/hardware.nix
@@ -133,7 +133,7 @@
         rpi4-02 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
           trustCaches = false;
-          specialArgs = { inherit inputs outputs sshkeys account; };
+          specialArgs = { inherit inputs outputs sshkeys account nixos-raspberrypi; };
           modules = [
             ./systems/rpi4-02/config.nix
             ./systems/rpi4-02/hardware.nix
