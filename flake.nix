@@ -2,7 +2,9 @@
   description = "Reproducable NixOS (and homemanager) config for my local servers, cloud servers, desktops, and laptops.";
 
   nixConfig = {
-    extra-substituters = [ "https://cache.edwardh.dev" ];
+    extra-substituters = [
+      "https://cache.edwardh.dev"
+    ];
     extra-trusted-public-keys = [
       "cache.edwardh.dev-1:/i5z0aYaRDBcT8Qf9uDFi8z0FEKIZsK7RVZLMKNJMGg="
     ];
@@ -19,14 +21,14 @@
     };
 
     deploy-rs.url = "github:serokell/deploy-rs";
-    raspberry-pi-nix.url = "github:nix-community/raspberry-pi-nix";
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
     agenix.url = "github:ryantm/agenix";
 
     edwardh-dev.url = "github:headblockhead/edwardh.dev";
   };
 
   outputs =
-    { self, nixpkgs, home-manager, agenix, deploy-rs, edwardh-dev, ... }@ inputs:
+    { self, nixpkgs, home-manager, deploy-rs, nixos-raspberrypi, agenix, edwardh-dev, ... }@ inputs:
     let
       inherit (self) outputs;
 
@@ -81,48 +83,72 @@
           ];
         };
 
-        rpi5-01 = nixpkgs.lib.nixosSystem {
+        rpi5-01 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
+          trustCaches = false;
           specialArgs = { inherit inputs outputs sshkeys account; };
           modules = [
             ./systems/rpi5-01/config.nix
             ./systems/rpi5-01/hardware.nix
-            inputs.raspberry-pi-nix.nixosModules.raspberry-pi
-            inputs.raspberry-pi-nix.nixosModules.sd-image
+            nixos-raspberrypi.nixosModules.raspberry-pi-5.base
             agenix.nixosModules.default
           ];
         };
 
-        rpi4-01 = nixpkgs.lib.nixosSystem {
+        rpi5-02 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
+          trustCaches = false;
+          specialArgs = { inherit inputs outputs sshkeys account; };
+          modules = [
+            ./systems/rpi5-02/config.nix
+            ./systems/rpi5-02/hardware.nix
+            nixos-raspberrypi.nixosModules.raspberry-pi-5.base
+            agenix.nixosModules.default
+          ];
+        };
+
+        rpi5-03 = nixos-raspberrypi.lib.nixosSystem {
+          system = "aarch64-linux";
+          trustCaches = false;
+          specialArgs = { inherit inputs outputs sshkeys account; };
+          modules = [
+            ./systems/rpi5-03/config.nix
+            ./systems/rpi5-03/hardware.nix
+            nixos-raspberrypi.nixosModules.raspberry-pi-5.base
+            agenix.nixosModules.default
+          ];
+        };
+
+        rpi4-01 = nixos-raspberrypi.lib.nixosSystem {
+          system = "aarch64-linux";
+          trustCaches = false;
           specialArgs = { inherit inputs outputs sshkeys account; };
           modules = [
             ./systems/rpi4-01/config.nix
             ./systems/rpi4-01/hardware.nix
-            inputs.raspberry-pi-nix.nixosModules.raspberry-pi
-            inputs.raspberry-pi-nix.nixosModules.sd-image
+            nixos-raspberrypi.nixosModules.raspberry-pi-4.base
           ];
         };
 
-        rpi4-02 = nixpkgs.lib.nixosSystem {
+        rpi4-02 = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
+          trustCaches = false;
           specialArgs = { inherit inputs outputs sshkeys account; };
           modules = [
             ./systems/rpi4-02/config.nix
             ./systems/rpi4-02/hardware.nix
-            inputs.raspberry-pi-nix.nixosModules.raspberry-pi
-            inputs.raspberry-pi-nix.nixosModules.sd-image
+            nixos-raspberrypi.nixosModules.raspberry-pi-4.base
           ];
         };
 
-        printerpi = nixpkgs.lib.nixosSystem {
+        printerpi = nixos-raspberrypi.lib.nixosSystem {
           system = "aarch64-linux";
+          trustCaches = false;
           specialArgs = { inherit inputs outputs sshkeys account; };
           modules = [
             ./systems/printerpi/config.nix
             ./systems/printerpi/hardware.nix
-            inputs.raspberry-pi-nix.nixosModules.raspberry-pi
-            inputs.raspberry-pi-nix.nixosModules.sd-image
+            nixos-raspberrypi.nixosModules.raspberry-pi-4.base
           ];
         };
 
@@ -190,11 +216,6 @@
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./systems/gateway/users/headb.nix ];
-        };
-        "headb@printerpi" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.aarch64-linux;
-          extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./systems/printerpi/users/headb.nix ];
         };
         "headb@edward-desktop-01" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;

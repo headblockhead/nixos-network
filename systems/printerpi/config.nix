@@ -7,7 +7,6 @@
     distributedBuilds
     fzf
     git
-    homeManager
     ssh
     users
     zsh

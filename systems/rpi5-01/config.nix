@@ -11,7 +11,6 @@
     distributedBuilds
     git
     headless
-    homeManager
     monitoring
     ssh
     users
@@ -50,19 +49,26 @@
     server.addr = "127.0.0.1:8501";
     upstream.caches = [
       "http://localhost:5000" # Harmonia
-      "https://nix-community.cachix.org"
+
       "https://cachix.cachix.org"
+      "https://nix-community.cachix.org"
       "https://cache.nixos.org/"
+      "https://nixos-raspberrypi.cachix.org"
     ];
     upstream.publicKeys = [
       "localhost-1:399MbAJBhAFFfUt+JVjnnCvcM4iWkhlIYMLV4eAvEec="
+
       "cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
     ];
     cache = {
       secretKeyPath = config.age.secrets.ncps-signing-key.path;
       hostName = "cache.edwardh.dev";
+      maxSize = "100G";
+      allowPutVerb = false;
+      allowDeleteVerb = false;
     };
   };
 

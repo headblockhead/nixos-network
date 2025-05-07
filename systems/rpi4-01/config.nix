@@ -8,7 +8,6 @@
     fzf
     git
     headless
-    homeManager
     monitoring
     ssh
     users
