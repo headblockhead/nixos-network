@@ -22,13 +22,14 @@
 
     deploy-rs.url = "github:serokell/deploy-rs";
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
+    disko.url = "github:nix-community/disko";
     agenix.url = "github:ryantm/agenix";
 
     edwardh-dev.url = "github:headblockhead/edwardh.dev";
   };
 
   outputs =
-    { self, nixpkgs, home-manager, deploy-rs, nixos-raspberrypi, agenix, edwardh-dev, ... }@ inputs:
+    { self, nixpkgs, home-manager, deploy-rs, nixos-raspberrypi, agenix, disko, edwardh-dev, ... }@ inputs:
     let
       inherit (self) outputs;
 
@@ -89,8 +90,10 @@
           modules = [
             ./systems/rpi5-01/config.nix
             ./systems/rpi5-01/hardware.nix
+            ./systems/rpi5-01/disko.nix
             nixos-raspberrypi.nixosModules.raspberry-pi-5.base
             agenix.nixosModules.default
+            disko.nixosModules.disko
           ];
         };
 
@@ -100,8 +103,10 @@
           modules = [
             ./systems/rpi5-02/config.nix
             ./systems/rpi5-02/hardware.nix
+            ./systems/rpi5-02/disko.nix
             nixos-raspberrypi.nixosModules.raspberry-pi-5.base
             agenix.nixosModules.default
+            disko.nixosModules.disko
           ];
         };
 
@@ -111,8 +116,10 @@
           modules = [
             ./systems/rpi5-03/config.nix
             ./systems/rpi5-03/hardware.nix
+            ./systems/rpi5-03/disko.nix
             nixos-raspberrypi.nixosModules.raspberry-pi-5.base
             agenix.nixosModules.default
+            disko.nixosModules.disko
           ];
         };
 
