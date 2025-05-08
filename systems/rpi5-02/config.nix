@@ -9,7 +9,6 @@
     git
     headless
     monitoring
-    fileSystems
     ssh
     users
     zsh
