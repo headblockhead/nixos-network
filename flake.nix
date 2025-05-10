@@ -6,7 +6,7 @@
       "https://cache.edwardh.dev"
     ];
     extra-trusted-public-keys = [
-      "cache.edwardh.dev-1:/i5z0aYaRDBcT8Qf9uDFi8z0FEKIZsK7RVZLMKNJMGg="
+      "cache.edwardh.dev-1:+Gafa747BGilG7GAbTC/1i6HX9NUwzMbdFAc+v5VOPk="
     ];
   };
 

@@ -45,7 +45,7 @@
     experimental-features = "nix-command flakes";
     auto-optimise-store = true;
     substituters = [ "https://cache.edwardh.dev" ];
-    trusted-public-keys = [ "cache.edwardh.dev-1:/i5z0aYaRDBcT8Qf9uDFi8z0FEKIZsK7RVZLMKNJMGg=" ];
+    trusted-public-keys = [ "cache.edwardh.dev-1:+Gafa747BGilG7GAbTC/1i6HX9NUwzMbdFAc+v5VOPk=" ];
     download-buffer-size = 524288000; # 500MB
   };
 

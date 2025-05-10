@@ -1,17 +1,13 @@
 let
-  # Yubikey access for editing of secrets
-  crystal-peak = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvr2FrC9i1bjoVzg+mdytOJ1P0KRtah/HeiMBuKD3DX cardno:23_836_181";
-  depot-37 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIvDaJmOSXV24B83sIfZqAUurs+cZ7582L4QDePuc3p7 cardno:17_032_332";
-  thunder-mountain = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBexdKZYlyseEcm1S3xNDqPTGZMfm/NcW1ygY91weDhC cardno:30_797_561";
-  editing-keys = [ crystal-peak depot-37 thunder-mountain ];
-
   # Machine keys
   edward-desktop-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOs2G2Yt7+A53v5tymBcbAlWnT9tLZYNSW+XGqZU6ITh";
   edward-laptop-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGOkGgaa7J85LK4Vfe3+NvxxQObZspyRd50OkUQz/Ox";
   edward-dell-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHiyDjr1nhiNjMkH4BCptfyb3UQ5xiPgMJlTxEA01FBr";
   edwardh = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOlOFRdX4CqbBfeikQKXibVIxhFjg0gTcTUdTgDIL7H8";
-  rpi5-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAHz1QPfx3+31Tw+w/cjBh/oNBWAZ5WU2wEgYe3JDdj5";
+  rpi5-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKtvhxOROlavY2jNZUgpD1BkTgDNavy/TuoLnDyGWxlV";
   gateway = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFl5CJU+QEKdSV/ybMegoKGT+NamF1FBYcMcSRACZLvJ";
+
+  editing-keys = [ edward-desktop-01 ];
 in
 {
   # Passwords
@@ -25,7 +21,7 @@ in
 
   # Nix Cache signing private keys
   "harmonia-signing-key.age".publicKeys = [ rpi5-01 ];
-  "ncps-signing-key.age".publicKeys = [ rpi5-01 ];
+  "ncps-signing-key.age".publicKeys = editing-keys ++ [ rpi5-01 ];
 
   # WG0 (remote access to home servers): 172.16.10.0/24
   # Server
