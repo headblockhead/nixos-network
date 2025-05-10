@@ -5,6 +5,7 @@ let
   edward-desktop-01-key = ''ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOs2G2Yt7+A53v5tymBcbAlWnT9tLZYNSW+XGqZU6ITh'';
   edward-laptop-01-key = ''ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGOkGgaa7J85LK4Vfe3+NvxxQObZspyRd50OkUQz/Ox'';
   rpi5-01-key = ''ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAHz1QPfx3+31Tw+w/cjBh/oNBWAZ5WU2wEgYe3JDdj5'';
+  rpi5-03-key = ''ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ/4Qh6r7a065byYqI9gEba44DRXDuUF6vbIUduk/EJF'';
   printerpi-key = ''ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1ULDVHDscwoicWFYgNPumTF2l5clw6Nh6hr9tdLDll'';
 
   buildMachines = [
@@ -34,6 +35,20 @@ let
       maxJobs = 4;
       speedFactor = 3;
     }
+    {
+      hostName = "rpi5-03";
+      systems = [ "aarch64-linux" ];
+      sshUser = "nixbuilder";
+      sshKey = "/etc/ssh/ssh_host_ed25519_key";
+      protocol = "ssh-ng";
+      # base64 -w0
+      publicHostKey = "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUovNFFoNnI3YTA2NWJ5WXFJOWdFYmE0NERSWER1VUY2dmJJVWR1ay9FSkY=";
+      supportedFeatures = [ "nixos-test" ];
+      mandatoryFeatures = [ ];
+      maxJobs = 4;
+      speedFactor = 3;
+    }
+
   ];
 in
 {
@@ -50,6 +65,7 @@ in
       printerpi-key
       edward-laptop-01-key
       rpi5-01-key
+      rpi5-03-key
     ];
   };
   nix.distributedBuilds = true;

@@ -219,6 +219,7 @@ in
         "ec:64:c9:e9:97:9a,172.16.2.113,prusa-mk4"
         # SRV
         "d8:3a:dd:97:a9:c4,172.16.3.51,rpi5-01"
+        "2c:cf:67:94:37:82,172.16.3.52,rpi5-02"
         "2c:cf:67:94:38:23,172.16.3.53,rpi5-03"
         "dc:a6:32:31:50:3b,172.16.3.41,rpi4-01"
         "e4:5f:01:11:a6:8e,172.16.3.42,rpi4-02"
@@ -403,6 +404,12 @@ in
         job_name = "rpi5-01-node-exporter";
         static_configs = [{
           targets = [ "172.16.3.51:9002" ];
+        }];
+      }
+      {
+        job_name = "rpi5-02-node-exporter";
+        static_configs = [{
+          targets = [ "172.16.3.52:9002" ];
         }];
       }
       {
