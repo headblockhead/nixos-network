@@ -23,10 +23,12 @@
     monero-cli
     p2pool
   ];
+  systemd.services.monero.wants = [ "network-online.target" ];
+  systemd.services.monero.after = [ "network-online.target" ];
   systemd.services.p2pool = {
     description = "Decentralized pool for Monero mining";
-    after = [ "monero.service" "network.target" ];
-    wantedBy = [ "multi-user.target" ];
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${pkgs.unstable.p2pool}/bin/p2pool --mini --host 127.0.0.1 --rpc-port 18081 --zmq-port 18084 --wallet 48pEZBjqjNRCbVptEMGRdeYeUgmXaHbz7gLErTneJnN8Uc5r2qHyEPoGmS1NSmQqaK5hUjZUvRG24jBNRKjA51qbDkWM1oX --stratum 0.0.0.0:3333 --p2p 0.0.0.0:37889";

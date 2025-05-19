@@ -30,24 +30,24 @@
     yubikey
     zsh
 
-    sheepit
+    #sheepit
 
-    #p2pool
-    #xmrig
+    p2pool
+    xmrig
   ];
-  #systemd.services.xmrig.wantedBy = lib.mkForce [ ];
+  systemd.services.xmrig.wantedBy = lib.mkForce [ ];
 
-  services.ollama = {
-    enable = true;
-    acceleration = "rocm";
-  };
+  #  services.ollama = {
+  #enable = true;
+  #acceleration = "rocm";
+  #};
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
+    #dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
     package = pkgs.unstable.steam;
   };
